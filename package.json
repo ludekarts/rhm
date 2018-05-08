@@ -1,9 +1,10 @@
 {
   "name": "rhm",
-  "version": "0.4.0",
-  "description": "Yet another set of tools to deal with sync and async actions in Redux + some extras",
-  "main": "index.js",
+  "version": "0.4.1",
+  "description": "Redux Helpers Middleware (RHM). Yet another set of tools to deal with sync and async actions in Redux + some extras",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "rimraf dist/* && webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -12,6 +13,19 @@
     "Actions",
     "Async"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ludekarts/rhm.git"
+  },
   "author": "Wojciech Ludwin, ludekarts@gmail.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "rimraf": "^2.6.2",
+    "webpack": "^4.8.1",
+    "webpack-cli": "^2.1.3"
+  }
 }
