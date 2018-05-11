@@ -10,13 +10,16 @@ This package contains several utility functions to :
 #### redux-helpers-middleware
 ...
 
-#### createAction("ACTION_TYPE", [payload, () => Promise])
+#### createAction("ACTION_TYPE", [payload / () => Promise])
 ...
 
 #### createReducer("ACTION_TYPE", (payload, state, args) => ({key: value}) ,...)
 ...
 
 #### createReduxUtils(reducer, actions, consts, hash): {storeHook, actions, selectors, consts}
+...
+
+#### combineHooks([reducer / storeHooks]): {storeHook, combinedHooks}
 ...
 
 #### testAsyncActions(): {sniffer, listener}

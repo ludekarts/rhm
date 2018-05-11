@@ -1,4 +1,4 @@
-// Redux helpers v 0.4.0
+// Redux Helpers Middleware.
 // by Wojciech Ludwin, ludekarts@gmail.com, 2018.
 
 // Check for primitie types & array.
@@ -146,6 +146,9 @@ const annotateReducer = (reducer, storeRoot) => {
 
 
 // Create Redux Utilities.
+//
+// createReduxUtils(reducer, actions, consts, hash): {storeHook, actions, selectors, consts}
+//
 // Helper that gelps to reduce boilerplate code when destructuring redux related utilities like e.g.
 // consts, actions, reducer,selectors etc. It also produce the "storeHook" for rootReducer.
 // If there is no "STORE_ROOT" const to supply it UID will be genrated automaticly with console warning.
@@ -154,7 +157,7 @@ const annotateReducer = (reducer, storeRoot) => {
 //       to supply them with dynamic "STORE_ROOT" key.
 //
 export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) => {
-  let storeRoot = hash || consts.STORE_ROOT
+  let storeRoot = typeof consts === "string" ? consts : hash || consts.STORE_ROOT
   let actions = fromActions
   let reducer = fromReducer.default
 
@@ -173,9 +176,26 @@ export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) =>
   const selectors = typeof fromReducer.selectors === "function"
     ? fromReducer.selectors(storeRoot)
     : fromReducer.selectors
-  const storeHook = {[storeRoot]: reducer}
+
+  const combinedHooks = fromReducer.combinedHooks || {}
+
+  // Expose current storeHook & Combine other hooks if exist.
+  const storeHook = {[storeRoot]: reducer, ...combinedHooks}
+
   return {storeHook, actions, selectors, consts}
 }
+
+// Helps with batching multiple "storeHooks" into one object which can be used in "rootReducer".
+export const combineHooks = (...utils) =>
+  utils.reduce((acc, util) => {
+    if (isPrimitive(util) || typeof util === "function")
+      throw "Only objects can be used in \"combineHooks()\" method."
+    else if (util.storeHook)
+      acc.combinedHooks = {...acc.combinedHooks, ...util.storeHook}
+    else
+      acc = {...acc, ...util}
+    return acc
+  }, {combinedHooks:{}})
 
 
 // ---- Test Async Actions ----------------
