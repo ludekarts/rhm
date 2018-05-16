@@ -170,7 +170,7 @@ export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) =>
   // Annotate action types and reducer's functions with given hash.
   if (hash) {
     actions = annotateActions(actions, storeRoot)
-    reducer = annotateReducer(reducer, storeRoot)
+    reducer = reducer ? annotateReducer(reducer, storeRoot) : reducer
   }
 
   const selectors = typeof fromReducer.selectors === "function"
@@ -179,8 +179,11 @@ export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) =>
 
   const combinedHooks = fromReducer.combinedHooks || {}
 
+  // Allow to skip default reduces (usefull when agregating sub-reducers).
+  const defStoreHook = reducer ? {[storeRoot]: reducer} : {}
+
   // Expose current storeHook & Combine other hooks if exist.
-  const storeHook = {[storeRoot]: reducer, ...combinedHooks}
+  const storeHook = {...defStoreHook, ...combinedHooks}
 
   return {storeHook, actions, selectors, consts}
 }
