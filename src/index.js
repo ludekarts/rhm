@@ -3,6 +3,7 @@
 
 // Check for primitie types & array.
 const isPrimitive = object => !object
+  || typeof object === "symbol"
   || typeof object === "string"
   || typeof object === "number"
   || typeof object === "boolean"
@@ -156,13 +157,13 @@ const annotateReducer = (reducer, storeRoot) => {
 // NOTE: When You're creating your Selectros you can wrap them in a function (root) => ({selcetors})
 //       to supply them with dynamic "STORE_ROOT" key.
 //
-export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) => {
-  let storeRoot = typeof consts === "string" ? consts : hash || consts.STORE_ROOT
+export const createReduxUtils = (fromReducer, fromActions, consts, hash) => {
+  let storeRoot = typeof consts === "string" ? consts : hash ? hash : consts ? consts.STORE_ROOT : undefined
   let actions = fromActions
   let reducer = fromReducer.default
 
   // Create random "storeRoot" to not crash.
-  if (!storeRoot) {
+  if (!storeRoot && reducer) {
     storeRoot = uid()
     console.warn("There is no STORE_ROOT constant to generate 'storeHook'. UID was generated: " + storeRoot)
   }
@@ -170,7 +171,7 @@ export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) =>
   // Annotate action types and reducer's functions with given hash.
   if (hash) {
     actions = annotateActions(actions, storeRoot)
-    reducer = reducer ? annotateReducer(reducer, storeRoot) : reducer
+    reducer = annotateReducer(reducer, storeRoot)
   }
 
   const selectors = typeof fromReducer.selectors === "function"
@@ -185,14 +186,20 @@ export const createReduxUtils = (fromReducer, fromActions, consts = {}, hash) =>
   // Expose current storeHook & Combine other hooks if exist.
   const storeHook = {...defStoreHook, ...combinedHooks}
 
-  return {storeHook, actions, selectors, consts}
+  // Explicite create utilities that exist.
+  const utilities = {storeHook};
+  if (consts) utilities.consts = consts
+  if (actions) utilities.actions = actions
+  if (selectors) utilities.selectors = selectors
+
+  return utilities
 }
 
 // Helps with batching multiple "storeHooks" into one object which can be used in "rootReducer".
 export const combineHooks = (...utils) =>
   utils.reduce((acc, util) => {
     if (isPrimitive(util) || typeof util === "function")
-      throw "Only objects can be used in \"combineHooks()\" method."
+      throw `Only objects can be used in "combineHooks()" method instead got "${Array.isArray(util) ? "array" : typeof util}"`
     else if (util.storeHook)
       acc.combinedHooks = {...acc.combinedHooks, ...util.storeHook}
     else
