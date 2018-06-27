@@ -15,15 +15,6 @@ import {isPrimitive, isAction, isObject, mergeStateObjects} from "./helpers"
 // }, ...)(initialState, ...)
 //
 const createReducer = (...args) => {
-  // if (args.length % 2 !== 0 || args.length === 0)
-  //   throw new Error("Arguments for \"createReducer\" has ODD numbers of arguments.\nCorect pattern is: createReducer(ACTION_NAME, reducer, ...)")
-
-  // const cases = chunk(args, 2).reduce((acc, [action_type, reducer]) => {
-  //   if (!isAction(action_type)) throw new Error("Incorrect action type in \"createReducer()\"")
-  //   acc[action_type] = reducer
-  //   return acc
-  // }, {})
-
   const cases = args.reduce((acc, _case, index) => {
     if (!isObject(_case))
       throw new Error(`Incorrect argument in \"createReducer()\" at index: [${index}]. All arguments should be Objects`)

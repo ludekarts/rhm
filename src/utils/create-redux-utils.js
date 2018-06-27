@@ -1,37 +1,37 @@
 import {uid, isObject} from "./helpers"
 import createAction from "./create-action"
 import createReducer from "./create-reducer"
+import combineMountingPoints from "./combine-mounting-points"
 
 
 // Create Redux Utilities.
+// createReduxUtils({reducer, actions, consts, ...}, namespace) => ({storeHook, actions, selectors, consts, ...})
 //
-// createReduxUtils({reducer, actions, consts, namespace, ...}): {storeHook, actions, selectors, consts, ...}
+// Provides mounting point for rootReducer (const.STORE_ROOT) and allows to annotate "reducer", "actions"
+// and "selectors" of component with custom namespace in case developer want to duplicate functionality in a cheap way.
 //
 // NOTE: When You're creating your Selectros you can wrap them in a function: root => ({selcetors})
 //       to supply them with dynamic "STORE_ROOT" key.
 
 
-
-// ---- Redux Utilities ----------------
-
-// Annotate actions with custom hash.
-const annotateActions = (actions, annotation) =>
+// Annotate actions with custom namespace.
+const annotateActions = (actions, namespace) =>
   Object.keys(actions).reduce((acc, name) => {
     const action = actions[name]("RHM%BYPASS")
-    acc[name] = createAction(`${action.type}_${annotation}`, action.payload)
+    acc[name] = createAction(`${action.type}_${namespace}`, action.payload)
     return acc
   }, {})
 
 
-// Annotate reducer's actions with custom hash.
-const annotateReducer = (reducer, annotation) => {
+// Annotate reducer's actions with custom namespace.
+const annotateReducer = (reducer, namespace) => {
   const findAsync = /(_COMPLETE|_ERROR)$/m
   const [reducerArgs, initialState] = reducer(null, null, true)
   const annotatedReducer = reducerArgs.map(caseObject =>
     Object.keys(caseObject).reduce((acc, action_type) => {
       const annotatedActionType = findAsync.test(action_type)
-        ? action_type.replace(findAsync, match => `_${annotation}${match}`)
-        : `${action_type}_${annotation}`
+        ? action_type.replace(findAsync, match => `_${namespace}${match}`)
+        : `${action_type}_${namespace}`
       acc[annotatedActionType] = caseObject[action_type]
       return acc
     }, {})
@@ -41,16 +41,23 @@ const annotateReducer = (reducer, annotation) => {
 }
 
 
-const createReduxUtils = utilities => {
+// ---- Redux Utilities ----------------
+
+const createReduxUtils = (utilities, namespace) => {
 
   if (!isObject(utilities))
-    throw new Error("Incorrect argument. Method \"combineUtilities()\" requires Object as an argument")
+    throw new Error("Incorrect argument. Method \"createReduxUtils()\" requires Object as an argument")
 
   if (!utilities.reducer)
-    throw new Error("No reducer in \"combineUtilities()\"")
+    if (!utilities.combine)
+      throw new Error("No \"reducer\" or \"combine\" property in \"createReduxUtils()\"")
+    else  {
+      let {combine, ...rest} = utilities
+      return {storeHook: combineMountingPoints(combine), ...rest}
+    }
 
-  let {consts, actions, reducer: {default: reducer}, ...rest} = utilities
-  let storeRoot = utilities.namespace ? utilities.namespace : utilities.consts ? utilities.consts.STORE_ROOT : undefined
+  let {consts, actions, reducer: {default: reducer}, combine, ...rest} = utilities
+  let storeRoot = namespace ? namespace : utilities.consts ? utilities.consts.STORE_ROOT : undefined
 
   // Create random "storeRoot" to avoid names colision.
   if (!storeRoot && reducer) {
@@ -59,10 +66,13 @@ const createReduxUtils = utilities => {
   }
 
   // Annotate Action_Types and Reducers with given namespace.
-  if (utilities.namespace) {
+  if (namespace) {
     actions = annotateActions(actions, storeRoot)
     reducer = annotateReducer(reducer, storeRoot)
   }
+
+  // Set storeHook fro rootReducer.
+  const storeHook = reducer ? {[storeRoot]: reducer} : {}
 
   // Annotate & Merge all Selectors.
   let selectors = utilities.selectors
@@ -77,84 +87,16 @@ const createReduxUtils = utilities => {
 
   selectors = selectors ? {...selectors, ...reducerSelectors} : reducerSelectors
 
-  // Set storeHook fro rootReducer.
-  const storeHook = reducer ? {[storeRoot]: reducer} : {}
-
   // Explicite create utilities that exist.
   const annotatedUtils = {storeHook}
   if (consts) annotatedUtils.consts = consts
   if (actions) annotatedUtils.actions = actions
   if (selectors) annotatedUtils.selectors = selectors
 
+  // Combine additional storeHooks.
+  if (combine) annotatedUtils.storeHook = {...combineMountingPoints(combine), ...annotatedUtils.storeHook}
+
   return {...annotatedUtils, ...rest}
 }
 
 export default createReduxUtils
-
-
-/*
-
-
-// Annotate actions with custom hash.
-const annotateActions = (actions, storeRoot) =>
-  Object.keys(actions).reduce((acc, name) => {
-    const action = actions[name]("RHM%BYPASS")
-    acc[name] = createAction(`${action.type}_${storeRoot}`, action.payload)
-    return acc
-  }, {})
-
-
-// Annotate reducer's actions with custom hash.
-const annotateReducer = (reducer, storeRoot) => {
-  const [reducerArgs, initialState] = reducer(null, null, true)
-  const annotatedReducer = reducerArgs.map((arg, index) =>
-    index % 2 === 0
-      ? /(_COMPLETE|_ERROR)$/m.test(arg)
-        ? arg.replace(/(_COMPLETE|_ERROR)$/m, match => `_${storeRoot}${match}`)
-        : `${arg}_${storeRoot}`
-      : arg
-  )
-  return createReducer(...annotatedReducer)(initialState)
-}
-
-
-const createReduxUtils = (fromReducer, fromActions, consts, hash) => {
-  let storeRoot = typeof consts === "string" ? consts : hash ? hash : consts ? consts.STORE_ROOT : undefined
-  let actions = fromActions
-  let reducer = fromReducer.default
-
-  // Create random "storeRoot" to not crash.
-  if (!storeRoot && reducer) {
-    storeRoot = uid()
-    console.warn("There is no STORE_ROOT constant to generate 'storeHook'. UID was generated: " + storeRoot)
-  }
-
-  // Annotate action types and reducer's functions with given hash.
-  if (hash) {
-    actions = annotateActions(actions, storeRoot)
-    reducer = annotateReducer(reducer, storeRoot)
-  }
-
-  const selectors = typeof fromReducer.selectors === "function"
-    ? fromReducer.selectors(storeRoot)
-    : fromReducer.selectors
-
-  const combinedHooks = fromReducer.combinedHooks || {}
-
-  // Allow to skip default reduces (usefull when agregating sub-reducers).
-  const defStoreHook = reducer ? {[storeRoot]: reducer} : {}
-
-  // Expose current storeHook & Combine other hooks if exist.
-  const storeHook = {...defStoreHook, ...combinedHooks}
-
-  // Explicite create utilities that exist.
-  const utilities = {storeHook};
-  if (consts) utilities.consts = consts
-  if (actions) utilities.actions = actions
-  if (selectors) utilities.selectors = selectors
-
-  return utilities
-}
-
-export default createReduxUtils
-*/

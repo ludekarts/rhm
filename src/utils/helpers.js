@@ -19,20 +19,11 @@ export const isBypass = args => args[0] && typeof args[0] === "string" && args[0
 // Dumb check, but it works for most cases.
 export const isPromise = fn => fn && typeof fn.then === "function"
 
-// Slice array in chunks with given size.
-// export const chunk = (array, size) => {
-//   let index = 0, arrayLength = array.length, chunks = []
-//   for (index ; index < arrayLength; index += size) {
-//     chunks.push(array.slice(index, index + size))
-//   }
-//   return chunks
-// }
-
+// Merge InitialState Objects.
 export const mergeStateObjects = args =>
   args.reduce((acc, arg) => {
     if (!isObject(arg))
       throw new Error(`Cannot merge initial states that are not Objects`)
-
     return {...acc, ...arg}
   }, {})
 
