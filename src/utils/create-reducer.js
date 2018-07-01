@@ -1,4 +1,4 @@
-import {isPrimitive, isAction, isObject, mergeStateObjects} from "./helpers"
+import {isPrimitive, isObject, mergeStateObjects} from "./helpers"
 
 
 // Create Reducer Helper.
@@ -20,9 +20,6 @@ const createReducer = (...args) => {
       throw new Error(`Incorrect argument in \"createReducer()\" at index: [${index}]. All arguments should be Objects`)
 
     Object.keys(_case).forEach((action_type, caseIndex) => {
-      if (!isAction(action_type))
-        throw new Error(`Incorrect action type in \"createReducer()\" at argument: [${index}] in case: [${caseIndex}]`)
-
       acc[action_type] = _case[action_type]
     })
 

@@ -10,9 +10,6 @@ export const isPrimitive = object => !object
 // Check if value is an Object.
 export const isObject = value => !isPrimitive(value) && typeof value !== "function"
 
-// Verify ~ name convention.
-export const isAction = (type) => typeof type === "string" && /^[0-9A-Z_-]+$/gm.test(type)
-
 // Verify if action need to be skipped.
 export const isBypass = args => args[0] && typeof args[0] === "string" && args[0] === "RHM%BYPASS"
 

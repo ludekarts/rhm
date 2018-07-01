@@ -5,7 +5,7 @@ import combineMountingPoints from "./combine-mounting-points"
 
 
 // Create Redux Utilities.
-// createReduxUtils({reducer, actions, consts, ...}, namespace) => ({storeHook, actions, selectors, consts, ...})
+// createReduxUtils({reducer, actions, consts, combinne, storeRoot, ...}, namespace) => ({storeHook, actions, selectors, consts, ...})
 //
 // Provides mounting point for rootReducer (const.STORE_ROOT) and allows to annotate "reducer", "actions"
 // and "selectors" of component with custom namespace in case developer want to duplicate functionality in a cheap way.
@@ -40,6 +40,13 @@ const annotateReducer = (reducer, namespace) => {
   return createReducer(...annotatedReducer).apply(null, initialState)
 }
 
+// Wrapp selectors with state slicing function.
+const mountSelectors = (selectors, storeRoot) =>
+  Object.keys(selectors).reduce((acc, name) => {
+    acc[name] = state => selectors[name](state[storeRoot])
+    return acc
+  }, {})
+
 
 // ---- Redux Utilities ----------------
 
@@ -56,36 +63,27 @@ const createReduxUtils = (utilities, namespace) => {
       return {storeHook: combineMountingPoints(combine), ...rest}
     }
 
-  let {consts, actions, reducer: {default: reducer}, combine, ...rest} = utilities
-  let storeRoot = namespace ? namespace : utilities.consts ? utilities.consts.STORE_ROOT : undefined
+  let {consts, actions, reducer: {default: reducer}, combine, storeRoot, ...rest} = utilities
+  storeRoot = storeRoot && typeof storeRoot === "string" ? storeRoot : utilities.consts ? utilities.consts.STORE_ROOT : undefined
 
   // Create random "storeRoot" to avoid names colision.
   if (!storeRoot && reducer) {
     storeRoot = uid()
-    console.warn(`There is no STORE_ROOT constant or "root" utility name to supply "storeHook". Instead UID: "${storeRoot}" was generated.`)
+    console.warn(`There is no STORE_ROOT constant or "storeRoot" property name to supply "storeHook". Instead UID: "${storeRoot}" was generated.`)
   }
 
   // Annotate Action_Types and Reducers with given namespace.
   if (namespace) {
-    actions = annotateActions(actions, storeRoot)
-    reducer = annotateReducer(reducer, storeRoot)
+    actions = annotateActions(actions, namespace)
+    reducer = annotateReducer(reducer, namespace)
   }
 
   // Set storeHook fro rootReducer.
   const storeHook = reducer ? {[storeRoot]: reducer} : {}
 
-  // Annotate & Merge all Selectors.
-  let selectors = utilities.selectors
-    ? typeof utilities.selectors === "function"
-      ? utilities.selectors(storeRoot)
-      : utilities.selectors
-    : undefined
-
-  const reducerSelectors = typeof utilities.reducer.selectors === "function"
-    ? utilities.reducer.selectors(storeRoot)
-    : utilities.reducer.selectors
-
-  selectors = selectors ? {...selectors, ...reducerSelectors} : reducerSelectors
+  // Setup selectors.
+  const reducerSelector = utilities.reducer.selectors ? mountSelectors(utilities.reducer.selectors, storeRoot) : {}
+  const selectors = utilities.selectors ? {...reducerSelector, ...utilities.selectors} : reducerSelector
 
   // Explicite create utilities that exist.
   const annotatedUtils = {storeHook}

@@ -63,23 +63,23 @@ All of the objects returned from the reducer function will be flat merge into ne
 ### createReduxUtils({reducer, actions, consts, combine}, namespace)
 > Returns: {storeHook, actions, selectors, consts, ...}
 
-Provides mounting point for rootReducer (const.STORE_ROOT) and allows to annotate "reducer", "actions" and "selectors" of component with custom namespace in case developer want to duplicate functionality in a cheap way.
+Provides mounting point for rootReducer (*const.STORE_ROOT*) and allows to annotate *reducer* and *actions* of the component with **custom namespaces** in case developer want to duplicate or extend reducers functionality with other components.
 
 #### Selectros note:
 
-- It is redomended to put **selectors** in the same file with **reducers**.
-- When you're creating your selectors you can wrap them in a function: `root => ({selcetors})` to supply them with dynamic `STORE_ROOT` or specific namespace.
+It is redomended to put **selectors** in the same file with **reducers** and export them as **selectors** object: `export {selectors}`. Then *createReduxUtils* will make sure that the **state object** passed to the selector will be a slice of the global state object related directly to the current reducer. It will also works with `reselect` library.
+
 
 **Example of annotated selecctors**
 ```
-const selectors = root => {
-  const selectors = {}
-  selectors.getValue = state => state[root].value
-  ...
-  return selectors
-}
+  const initState = {
+    value: 0
+  }
 
-export {selectors}
+  const selectors = {}
+  selectors.getValue = state => state.value
+
+  export {selectors}
 ```
 
 #### Combining Mounting Points note:
