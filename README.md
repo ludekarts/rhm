@@ -60,10 +60,22 @@ default export createReducer(reducersLogicA, reducersLogicB)(initialStateA, init
 
 All of the objects returned from the reducer function will be flat merge into new state. So instead doing `{...state, myValue: 12}` just return a slice of the state you'd like to update e.g.: `{myValue: 12}`.
 
-### createReduxUtils({reducer, actions, consts, combine}, namespace)
+### createReduxUtils({reducer, actions, consts, combine, storeRoot}, namespace)
 > Returns: {storeHook, actions, selectors, consts, ...}
 
-Provides mounting point for rootReducer (*const.STORE_ROOT*) and allows to annotate *reducer* and *actions* of the component with **custom namespaces** in case developer want to duplicate or extend reducers functionality with other components.
+Provides mounting point for rootReducer (*const.STORE_ROOT*) and allows to annotate *reducer* and *actions* of the component with **custom namespaces** in case developer want to duplicate or extend reducers functionality with other components/reducers.
+
+
+**Properties description**
+
+| Prop | Description |
+| ---- | ------------|
+| **reducer** | Redux reducer for the component |
+| **actions** | All actions for the component |
+| **consts** | All constants for the component |
+| **combine** | Combines child components reducers (see below) |
+| **storeRoot** | If constants does not provide *STORE_ROOT* value then it can be added here. It also overrides default *STORE_ROOT* value if it exist |
+
 
 #### Selectros note:
 
