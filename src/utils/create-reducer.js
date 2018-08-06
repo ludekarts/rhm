@@ -33,6 +33,8 @@ const createReducer = (...args) => {
       ? initialState[0]
       : mergeStateObjects(initialState)
 
+    if (!mergedInitialState) throw new Error(`Missing initial state in \"createReducer()\"`)
+
     return (state = mergedInitialState, action, exit = false) => {
 
       // Exit with reducer's args & initialState => for actions customization.

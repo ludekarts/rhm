@@ -1,6 +1,6 @@
 {
   "name": "rhm",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Redux Helpers Middleware (RHM). Yet another set of tools to deal with sync and async actions in Redux + some extras",
   "main": "dist/index.js",
   "scripts": {

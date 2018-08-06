@@ -18,11 +18,18 @@ export const isPromise = fn => fn && typeof fn.then === "function"
 
 // Merge InitialState Objects.
 export const mergeStateObjects = args =>
-  args.reduce((acc, arg) => {
+  args.reduce((acc, arg, index) => {
     if (!isObject(arg))
-      throw new Error(`Cannot merge initial states that are not Objects`)
+      throw new Error(`Cannot merge initial states that are not Objects. Check initsial state at index: ${index}`)
     return {...acc, ...arg}
   }, {})
 
 // Generate UID.
 export const uid = () => "RHM." + ((+new Date) + Math.random()* 100).toString(32)
+
+// Bind identityty selectors to reselect's "createSelector".
+export const bindIdentitySelectors = dict => createSelector =>
+  Object.keys(dict).reduce((acc, key) => {
+    acc[key] = createSelector(dict[key], value => value)
+    return acc
+  }, {})
