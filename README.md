@@ -8,7 +8,7 @@ This package contains several utility functions to :
 ## Helper methods
 
 ### rhm
-The middleware that supports handling sync and async actions and helps deal with optimistic updates *(see Async actions)*.
+The middleware that supports **sync/async** actions and helps deal with optimistic updates *(see Async actions)*.
 
 ### createAction("ACTION_TYPE", payload)
 Helpers that allows to setup an action creator with given type and payload. Payload is passed as second argument and it can be **value** or **function** that returns a **Promise**. In that case action will be async.
@@ -16,6 +16,10 @@ Helpers that allows to setup an action creator with given type and payload. Payl
 #### Async actions
 
  When the action's payload is a Promise then this action is intercepted by the `rhm`. Intercepted action is then populated with new payload containing action-creator's arguments (those can be used to calculate optimistic update). After promise is resolved `ACTION_NAME_COMPLETE` action is dispatched. This time the payload contains an actual resolved value that can be used to update redux state. In case that an error occures the `ACTION_NAME_ERROR` action is dispatched with error message as a payload.
+
+**Wildcard error handling**
+
+You can provide a *Wildcard Error reducer* which looks like this: `*_ERROR`. It'll catch all async errors that are not specified in any of your reducers.  
 
 **Example action flow**
 ```
@@ -56,9 +60,10 @@ const reducerLogicB = {
 default export createReducer(reducersLogicA, reducersLogicB)(initialStateA, initialStateB)
 ```
 
-**Note**
+**Note about flat merge**
 
 All of the objects returned from the reducer function will be flat merge into new state. So instead doing `{...state, myValue: 12}` just return a slice of the state you'd like to update e.g.: `{myValue: 12}`.
+
 
 ### createReduxUtils({reducer, actions, consts, combine, storeRoot}, namespace)
 > Returns: {storeHook, actions, selectors, consts, ...}
@@ -75,6 +80,7 @@ Provides mounting point for rootReducer (*const.STORE_ROOT*) and allows to annot
 | **consts** | All constants for the component |
 | **combine** | Combines child components reducers (see below) |
 | **storeRoot** | If constants does not provide *STORE_ROOT* value then it can be added here. It also overrides default *STORE_ROOT* value if it exist |
+| ** * ** | Any other utility you want to include |
 
 
 #### Selectros note:

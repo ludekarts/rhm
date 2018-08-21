@@ -1,6 +1,23 @@
 import {isPrimitive, isObject, mergeStateObjects} from "./helpers"
 
 
+// Default reducin logic.
+
+const reduce = (reducer, action, state) => {
+  if (isPrimitive(reducer)) {
+    return reducer
+  }
+  else if (typeof reducer === "function") {
+    const itm = reducer(action.payload, state, action.args)
+    return isPrimitive(itm) ? itm : {...state, ...itm}
+  }
+  // Plain object.
+  else {
+    return {...state, ...reducer}
+  }
+}
+
+
 // Create Reducer Helper.
 // NOTE: All objects from the reducer function will be flat merge e.g.: {...state, myValue: 12}
 //       with default state. So just return a slice of the state you'd like to update e.g.: {myValue: 12}.
@@ -28,32 +45,32 @@ const createReducer = (...args) => {
 
   return (...initialState) => {
 
+    if (!initialState.length) throw new Error(`Missing initial state in "createReducer()"`)
+
     // Allow for merging multiple objects in one initialState.
     const mergedInitialState = initialState.length === 1
       ? initialState[0]
       : mergeStateObjects(initialState)
-
-    if (!mergedInitialState) throw new Error(`Missing initial state in \"createReducer()\"`)
 
     return (state = mergedInitialState, action, exit = false) => {
 
       // Exit with reducer's args & initialState => for actions customization.
       if (state === null && action === null && exit) return [args, initialState]
 
-      // Default reducing logic.
+      // Standard Reducer.
       const reducer = cases[action.type]
-      if (reducer) {
-        if (isPrimitive(reducer)) {
-          return reducer
-        }
-        else if (typeof reducer === "function") {
-          const itm = reducer(action.payload, state, action.args)
-          return isPrimitive(itm) ? itm : {...state, ...itm}
-        }
-        // Plain object.
-        else return {...state, ...reducer}
-      }
-      else return state
+
+      // Wildcard Error Reducer.
+      const wer = cases["*_ERROR"]
+
+      return reducer
+        // Default reducing logic.
+        ? reduce(reducer, action, state)
+        // Wildcard error handling.
+        : action.type.includes("_ERROR") && wer
+          ? reduce(wer, action, state)
+          // No action.
+          : state
     }
   }
 }

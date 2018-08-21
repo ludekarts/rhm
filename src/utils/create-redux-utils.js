@@ -53,17 +53,20 @@ const mountSelectors = (selectors, storeRoot) =>
 const createReduxUtils = (utilities, namespace) => {
 
   if (!isObject(utilities))
-    throw new Error("Incorrect argument. Method \"createReduxUtils()\" requires Object as an argument")
+    throw new Error(`Incorrect argument. Method "createReduxUtils()" requires Object as an argument`)
 
   if (!utilities.reducer)
     if (!utilities.combine)
-      throw new Error("No \"reducer\" or \"combine\" property in \"createReduxUtils()\"")
+      throw new Error(`No "reducer" or "combine" property in "createReduxUtils()"`)
     else  {
       let {combine, ...rest} = utilities
       return {storeHook: combineMountingPoints(combine), ...rest}
     }
 
-  let {consts, actions, reducer: {default: reducer}, combine, storeRoot, ...rest} = utilities
+  let {consts, actions, combine, storeRoot, ...rest} = utilities
+  // Reducer as default export OR regular object.
+  let reducer = utilities.reducer.default || utilities.reducer
+
   storeRoot = storeRoot && typeof storeRoot === "string" ? storeRoot : utilities.consts ? utilities.consts.STORE_ROOT : undefined
 
   // Create random "storeRoot" to avoid names colision.
