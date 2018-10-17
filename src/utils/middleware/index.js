@@ -1,4 +1,4 @@
-import {isPromise} from "./helpers"
+import {isPromise} from "../helpers"
 
 // Redux Helpers Middleware.
 // Allows to handle async actions, and deal with optimistic updates.

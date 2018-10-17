@@ -1,4 +1,4 @@
-import {isObject} from "./helpers"
+import {isObject} from "../helpers"
 
 // Combine mounting points of different components into one storeHook.
 const combineMountingPoints = combine => {

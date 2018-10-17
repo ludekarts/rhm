@@ -22,5 +22,11 @@ export default() => ({
         exclude: /node_modules/
       }
     ]
+  },
+
+  resolve: {
+    modules: [
+      "utils", "node_modules"
+    ]
   }
 })

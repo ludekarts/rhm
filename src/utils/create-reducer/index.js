@@ -1,8 +1,7 @@
-import {isPrimitive, isObject, mergeStateObjects} from "./helpers"
+import {isPrimitive, isObject, mergeStateObjects} from "../helpers"
 
 
-// Default reducin logic.
-
+// Default reducing logic.
 const reduce = (reducer, action, state) => {
   if (isPrimitive(reducer)) {
     return reducer
