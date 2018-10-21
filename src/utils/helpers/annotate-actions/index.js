@@ -1,4 +1,4 @@
-import createAction from "../create-action"
+import createAction from "../../create-action"
 
 // Annotate actions with custom namespace.
 const annotateActions = (actions, namespace) =>

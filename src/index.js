@@ -9,7 +9,7 @@ import mountReducers from "./utils/mount-reducers"
 import createReduxUtils from "./utils/create-redux-utils"
 import extendReduxUtils from "./utils/extend-redux-utils"
 import testAsyncActions from "./utils/test-async-actions"
-import {bindIdentitySelectors} from "./utils/helpers"
+import bindIdentitySelectors from "./utils/helpers/bind-identity-selectors"
 
 export default middleware
 export {createAction, createReducer, createReduxUtils, extendReduxUtils, mountReducers, bindIdentitySelectors, testAsyncActions}

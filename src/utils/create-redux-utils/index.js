@@ -3,9 +3,9 @@ import createAction from "create-action"
 import createReducer from "create-reducer"
 import combineMountingPoints from "combine-mounting-points"
 
-import mountSelectors from "./mount-selectors"
-import annotateActions from "./annotate-actions"
-import annotateReducer from "./annotate-reducer"
+import mountSelectors from "../helpers/mount-selectors"
+import annotateActions from "../helpers/annotate-actions"
+import annotateReducer from "../helpers/annotate-reducer"
 
 // Create Redux Utilities.
 // createReduxUtils({reducer, actions, consts, combinne, storeRoot, ...}, namespace) => ({storeHook, actions, selectors, consts, ...})

@@ -1,5 +1,5 @@
-import {isPrimitive, isObject, mergeStateObjects} from "../helpers"
-
+import {isPrimitive, isObject} from "../helpers"
+import mergeStateObjects from "../helpers/merge-state-objects"
 
 // Default reducing logic.
 const reduce = (reducer, action, state) => {

@@ -42,7 +42,7 @@ describe("Create Action", () => {
 
   describe("Run bypass action", () => {
 
-    it("should forward create arguments", () => {
+    it("should forward all creation arguments", () => {
       const actionBodyFn = id => id
       const action = createAction("NEW_ACTION", actionBodyFn)
       const result = action("RHM%BYPASS")
