@@ -10,7 +10,7 @@ const createAction = (type, body) => (...args) => {
       : body
 
   if (payload) action.payload = payload
-  if (args.length) action.args = args
+  if (args.length && body) action.args = args
   return action
 }
 

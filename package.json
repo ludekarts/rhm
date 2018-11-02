@@ -4,6 +4,7 @@
   "description": "Redux Helpers Middleware (RHM). Yet another set of tools to deal with sync and async actions in Redux + some extras",
   "main": "dist/index.js",
   "scripts": {
+    "start": "webpack --mode development --watch",
     "build": "rimraf dist/* && webpack --mode production",
     "test": "mocha --require babel-polyfill --require @babel/register --recursive \"./src/**/*.test.js\" --watch"
   },
