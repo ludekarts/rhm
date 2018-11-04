@@ -40,22 +40,15 @@ const createReduxUtils = (storeRoot, utilities) => {
       ? mountSelectors(utilities.selectors, storeRoot)
       : null
 
-  if (selectors) utilities.selectors = selectors
+  if (selectors) {
+    utilities.selectors = selectors    
+    // Add selectors to the reducer object cto make it consist.
+    if (!reducer.selectors && utilities.selectors) {
+      reducer.selectors = utilities.selectors
+    }
+  }
 
   return utilities
 }
 
 export default createReduxUtils
-
-
-
-  // if (utilities.reducer.selectors) {
-  //   selectors = utilities.reducer.selectors.refid
-  //     ? mountSelectors(utilities.reducer.selectors, storeRoot)
-  //     :utilities.reducer.selectors
-  // }
-  // else if (utilities.selectors) {
-  //   selectors = utilities.selectors.refid
-  //     ? mountSelectors(utilities.selectors, storeRoot)
-  //     : utilities.selectors
-  // }

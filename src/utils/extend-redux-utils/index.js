@@ -1,14 +1,37 @@
+import annotateActions from "../helpers/annotate-actions"
+import annotateReducer from "../helpers/annotate-reducer"
 import mountSelectors from "../helpers/mount-selectors"
 
-const extendReduxUtils = (extension, namespace) => {
-  const {reducer, selectors, actions, consts, ...rest} = extension
+const extendReduxUtils = (namespace, source, postfix, extension) => {
 
+  let {reducer, actions, selectors, storeHook, ...rest} = source
+  let srcSelectors = reducer.selectors
 
-  const filanUtils = {
-    selectors: selectors ? mountSelectors(selectors, namespace) : {}
+  const {
+    actions: extActions,
+    reducer: extReducer,
+    selectors: extSelectors,
+    storeHook: extStoreHook,
+    initState,
+    ...extRest
+  } = extension
+
+  reducer = reducer.default ? reducer.default : reducer
+
+  actions = annotateActions(actions, postfix, extActions)
+  reducer = annotateReducer(reducer, postfix, extReducer, initState)
+
+  console.log(extActions);
+  const extUtilities = {
+    actions,
+    reducer,
+    storeHook: {[namespace]: reducer},
+    selectors: mountSelectors({...srcSelectors, ...extSelectors}, namespace),
+    ...rest,
+    ...extRest
   }
 
-  return filanUtils
+  return extUtilities
 }
 
 export default extendReduxUtils

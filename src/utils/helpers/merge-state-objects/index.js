@@ -1,3 +1,5 @@
+import {isObject} from "../index"
+
 // Merge InitialState Objects.
 const mergeStateObjects = args =>
   args.reduce((acc, arg, index) => {
