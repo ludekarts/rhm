@@ -2,7 +2,7 @@
 // by Wojciech Ludwin 2018, ludekarts@gmail.com
 // License: MIT.
 
-import middleware from "./utils/middleware"
+import middleware from "./middleware"
 import createAction from "./utils/create-action"
 import createReducer from "./utils/create-reducer"
 import mountReducers from "./utils/mount-reducers"

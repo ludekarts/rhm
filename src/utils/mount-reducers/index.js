@@ -1,4 +1,4 @@
-import {isObject} from "../helpers"
+import {isObject} from "../../helpers"
 // Helps with destructureing the RHM reducers containings storeHooks.
 
 const mountReducers = (...reducers) =>

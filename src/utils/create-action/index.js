@@ -1,4 +1,4 @@
-import {isBypass} from "../helpers"
+import {isBypass} from "../../helpers"
 
 // Create Action Helper.
 const createAction = (type, body) => (...args) => {

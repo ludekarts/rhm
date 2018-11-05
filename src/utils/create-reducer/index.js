@@ -1,4 +1,4 @@
-import {isPrimitive, isObject} from "../helpers"
+import {isPrimitive, isObject} from "../../helpers"
 import mergeStateObjects from "../merge-state-objects"
 
 // Default reducing logic.

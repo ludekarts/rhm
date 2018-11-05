@@ -1,4 +1,4 @@
-import {isObject} from "../helpers"
+import {isObject} from "../../helpers"
 import mountSelectors from "../mount-selectors"
 import mergeUtilities from "../merge-utilities"
 import combineReducers from "../combine-reducers"

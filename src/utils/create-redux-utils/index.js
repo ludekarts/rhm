@@ -1,4 +1,4 @@
-import {uid, isObject} from "../helpers"
+import {uid, isObject} from "../../helpers"
 import mountSelectors from "../mount-selectors"
 
 
