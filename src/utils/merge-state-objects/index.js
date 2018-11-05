@@ -1,4 +1,4 @@
-import {isObject} from "../index"
+import {isObject} from "../helpers"
 
 // Merge InitialState Objects.
 const mergeStateObjects = args =>

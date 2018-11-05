@@ -1,5 +1,5 @@
 import {uid, isObject} from "../helpers"
-import mountSelectors from "../helpers/mount-selectors"
+import mountSelectors from "../mount-selectors"
 
 
 // ---- Create Redux Utilities ----------------
@@ -41,7 +41,7 @@ const createReduxUtils = (storeRoot, utilities) => {
       : null
 
   if (selectors) {
-    utilities.selectors = selectors    
+    utilities.selectors = selectors
     // Add selectors to the reducer object cto make it consist.
     if (!reducer.selectors && utilities.selectors) {
       reducer.selectors = utilities.selectors

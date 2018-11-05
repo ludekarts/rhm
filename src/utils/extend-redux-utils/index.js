@@ -1,6 +1,6 @@
-import annotateActions from "../helpers/annotate-actions"
-import annotateReducer from "../helpers/annotate-reducer"
-import mountSelectors from "../helpers/mount-selectors"
+import mountSelectors from "../mount-selectors"
+import annotateActions from "../annotate-actions"
+import annotateReducer from "../annotate-reducer"
 
 const extendReduxUtils = (namespace, source, postfix, extension) => {
 
@@ -21,7 +21,6 @@ const extendReduxUtils = (namespace, source, postfix, extension) => {
   actions = annotateActions(actions, postfix, extActions)
   reducer = annotateReducer(reducer, postfix, extReducer, initState)
 
-  console.log(extActions);
   const extUtilities = {
     actions,
     reducer,

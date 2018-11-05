@@ -10,7 +10,6 @@ import mergeReduxUtils from "./utils/merge-redux-utils"
 import createReduxUtils from "./utils/create-redux-utils"
 import extendReduxUtils from "./utils/extend-redux-utils"
 import testAsyncActions from "./utils/test-async-actions"
-import bindIdentitySelectors from "./utils/helpers/bind-identity-selectors"
 
 export default middleware
 export {
@@ -20,6 +19,5 @@ export {
   createReduxUtils,
   extendReduxUtils,
   mergeReduxUtils,
-  testAsyncActions,
-  bindIdentitySelectors
+  testAsyncActions
 }

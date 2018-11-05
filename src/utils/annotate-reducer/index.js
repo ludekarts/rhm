@@ -1,4 +1,4 @@
-import createReducer from "../../create-reducer"
+import createReducer from "../create-reducer"
 
 // Annotate reducer's actions with custom namespace.
 const annotateReducer = (reducer, namespace, extReducer, extState) => {

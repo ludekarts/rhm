@@ -1,5 +1,5 @@
 import {isPrimitive, isObject} from "../helpers"
-import mergeStateObjects from "../helpers/merge-state-objects"
+import mergeStateObjects from "../merge-state-objects"
 
 // Default reducing logic.
 const reduce = (reducer, action, state) => {
@@ -59,13 +59,13 @@ const createReducer = (...args) => {
       // Standard Reducer.
       const reducer = cases[action.type]
 
-      // Wildcard Error Reducer.
+      // Wildcard-Error Reducer.
       const wer = cases["*_ERROR"]
 
       return reducer
         // Default reducing logic.
         ? reduce(reducer, action, state)
-        // Wildcard error handling.
+        // Wildcard-Error handling.
         : action.type.includes("_ERROR") && wer
           ? reduce(wer, action, state)
           // No action.
