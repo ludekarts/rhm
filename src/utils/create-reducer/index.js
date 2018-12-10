@@ -1,18 +1,18 @@
-import {isPrimitive, isObject} from "../../helpers"
-import mergeStateObjects from "../merge-state-objects"
+import {isPrimitive, isObject} from "../../helpers";
+import mergeStateObjects from "../merge-state-objects";
 
 // Default reducing logic.
 const reduce = (reducer, action, state) => {
   if (isPrimitive(reducer)) {
-    return reducer
+    return reducer;
   }
   else if (typeof reducer === "function") {
-    const itm = reducer(action.payload, state, action.args)
-    return isPrimitive(itm) ? itm : {...state, ...itm}
+    const itm = reducer(action.payload, state, action.args);
+    return isPrimitive(itm) ? itm : {...state, ...itm};
   }
   // Plain object.
   else {
-    return {...state, ...reducer}
+    return {...state, ...reducer};
   }
 }
 
@@ -33,34 +33,35 @@ const reduce = (reducer, action, state) => {
 const createReducer = (...args) => {
   const cases = args.reduce((acc, _case, index) => {
     if (!isObject(_case))
-      throw new Error(`Incorrect argument in \"createReducer()\" at index: [${index}]. All arguments should be Objects`)
+      throw new Error(`Incorrect argument in "createReducer()" at index: [${index}]. All arguments should be Objects`);
 
     Object.keys(_case).forEach((action_type, caseIndex) => {
-      acc[action_type] = _case[action_type]
-    })
+      acc[action_type] = _case[action_type];
+    });
 
-    return acc
-  }, {})
+    return acc;
+  }, {});
 
   return (...initialState) => {
 
-    if (!initialState.length) throw new Error(`Missing initial state in "createReducer()"`)
+    if (!initialState.length)
+      throw new Error(`Missing initial state in "createReducer()"`);
 
     // Allow for merging multiple objects in one initialState.
     const mergedInitialState = initialState.length === 1
       ? initialState[0]
-      : mergeStateObjects(initialState)
+      : mergeStateObjects(initialState);
 
     return (state = mergedInitialState, action, exit = false) => {
 
       // Exit with reducer's args & initialState => for actions customization.
-      if (state === null && action === null && exit) return [args, initialState]
+      if (state === null && action === null && exit) return [args, initialState];
 
       // Standard Reducer.
-      const reducer = cases[action.type]
+      const reducer = cases[action.type];
 
       // Wildcard-Error Reducer.
-      const wer = cases["*_ERROR"]
+      const wer = cases["*_ERROR"];
 
       return reducer
         // Default reducing logic.
@@ -69,9 +70,9 @@ const createReducer = (...args) => {
         : action.type.includes("_ERROR") && wer
           ? reduce(wer, action, state)
           // No action.
-          : state
+          : state;
     }
   }
 }
 
-export default createReducer
+export default createReducer;
