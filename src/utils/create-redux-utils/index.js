@@ -42,7 +42,7 @@ const createReduxUtils = (storeRoot, utilities) => {
 
   if (selectors) {
     utilities.selectors = selectors;
-    // Add selectors to the reducer object cto make it consist.
+    // Add selectors to the reducer object to make it consistent.
     if (!reducer.selectors && utilities.selectors) {
       reducer.selectors = utilities.selectors;
     }
