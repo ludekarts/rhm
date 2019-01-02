@@ -4,10 +4,31 @@ import combineReducers from "../combine-reducers";
 import annotateReducer from "../annotate-reducer";
 import resolveSelectors from "../resolve-selectors";
 
+// Allows to deep/flat merge of redux-utils to helps create Store structure in more composible fashion.
+// In other words it merges given utilities under one namespace OR flat merge if no namespace respecting
+// all relations between reducres and it's slectors.
+//
+// USAGE:
+/*
 
-const isFlatmerged = utils => utils.storeHook && Object.keys(utils.storeHook).length > 1;
+import {utils_one} from "./components/utilsOne";
+import {utils_two} from "./components/utilsTwo";
+import {utils_three} from "./components/utilsThree";
 
-// Merges given utilities under one namespace OR flat merge if no namespace.
+
+// ---- Merge under namespace ----------------
+
+const mergedUtils = mergeReduxUtils("mergedName", utils_one, utils_two, utils_three);
+export default mergedUtils;
+
+
+// ---- Merge Flat ----------------
+
+const mergedUtilsFlat = mergeReduxUtils(utils_one, utils_two, utils_three);
+export default mergedUtilsFlat;
+
+*/
+
 const mergeReduxUtils = (namespace, ...utilities) => {
 
   // Flat merge.
@@ -76,3 +97,10 @@ const mergeReduxUtils = (namespace, ...utilities) => {
 }
 
 export default mergeReduxUtils;
+
+
+// ---- Helpers ----------------
+
+function isFlatmerged(utils) {
+  return utils.storeHook && Object.keys(utils.storeHook).length > 1;
+}

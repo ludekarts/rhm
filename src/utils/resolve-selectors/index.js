@@ -1,7 +1,3 @@
-
-// Composes selectors into one function call.
-const composeSelector = (selector, slicer) => (state, props) => selector(slicer(state, props), props);
-
 // Applies composing function to all selectors with given namespace.
 
 const resolveSelectors = (utils, namespace) => {
@@ -28,3 +24,11 @@ const resolveSelectors = (utils, namespace) => {
 
 
 export default resolveSelectors;
+
+
+// ---- Helpers ----------------
+
+// Composes selectors into one function call.
+function composeSelector(selector, slicer) {
+  return (state, props) => selector(slicer(state, props), props);
+}

@@ -31,7 +31,7 @@ const createReduxUtils = (storeRoot, utilities) => {
   // Setup selectors.
   if (process.env.NODE_ENV !== "production") {
     if (utilities.reducer.selectors && utilities.selectors)
-      throw new Error(`Two selectors objects detected in "${storeRoot}". Make sure to have only one selectors object in your utilities.`);
+      throw new Error(`Two "selectors" objects detected in "${storeRoot}". Make sure to have only one "selectors" object in your utilities.`);
   }
 
   const selectors = utilities.reducer.selectors

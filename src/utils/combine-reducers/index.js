@@ -1,5 +1,4 @@
-
-// Combinre reducer functions - just like redux.
+// Combine reducers - just like in redux.
 const combineReducers = reducers =>
   (state = {}, action) =>
     Object.keys(reducers).reduce(

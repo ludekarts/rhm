@@ -3,8 +3,11 @@ import {isObject} from "../../helpers";
 
 const mountReducers = (...reducers) =>
   reducers.reduce((acc, reducer, index) => {
-    if (!isObject(reducer) || !reducer.storeHook)
-      throw new Error(`One of the mounting reducers [at index:${index}] is not a proper RHM reducer.`);
+    if (process.env.NODE_ENV !== "production") {
+      if (!isObject(reducer) || !reducer.storeHook) {
+        throw new Error(`One of the mounting reducers [at index:${index}] is not a proper RHM reducer.`);
+      }
+    }
     return {...acc, ...reducer.storeHook};
   }, {});
 

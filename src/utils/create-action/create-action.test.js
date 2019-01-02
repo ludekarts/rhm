@@ -11,7 +11,6 @@ describe("Create Action", () => {
     const action_with_body = createAction("NEW_ACTION_W_BODY", {})
     const result_with_body = action_with_body({some: "data"})
 
-console.log(result_with_body);
     it("should create redux action creator", () => {
       expect(action).to.be.a("function")
     })

@@ -3,6 +3,7 @@
 // License: MIT.
 
 import middleware from "./middleware";
+// Utils.
 import createAction from "./utils/create-action";
 import createReducer from "./utils/create-reducer";
 import mountReducers from "./utils/mount-reducers";
@@ -14,12 +15,15 @@ import createCompactUtils from "./utils/create-compact-utils";
 
 export default middleware;
 export {
+  // Redux Defaults.
   createAction,
   createReducer,
   mountReducers,
+  // Redux Utils.
   createReduxUtils,
   extendReduxUtils,
   mergeReduxUtils,
   createCompactUtils,
+  // Testing.
   testAsyncActions
 };
