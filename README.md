@@ -1,21 +1,41 @@
 # Redux Helpers Middleware (RHM)
-This package contains several utility functions to :
-- Deals with synchronous and asynchronous actions in Redux.
-- Maintain Redux components.
-- Create multiple instances of the same Redux component.
+This package contains several utility functions for:
+- Dealing with synchronous and asynchronous actions in Redux.
+- Maintaining Redux components.
+- Exntending Redux components.
+- Building Redux Store structure in more compossible fashion (bottom-up).
 - Test async actions with regular Redux store.
 
-## Helper methods
+# Middleware
+Import as default from **rhm** package and add it into your middlewares.
 
-### rhm
-The middleware that supports **sync/async** actions and helps deal with optimistic updates *(see Async actions)*.
+```
+import rhm from "rhm";
+import {applyMiddleware, createStore} from "redux";
 
-### createAction("ACTION_TYPE", payload)
-Helpers that allows to setup an action creator with given type and payload. Payload is passed as second argument and it can be **value** or **function** that returns a **Promise**. In that case action will be async.
+...
 
-#### Async actions
+const store = createStore(reducer, applyMiddleware(rhm));
+```
 
- When the action's payload is a Promise then this action is intercepted by the `rhm`. Intercepted action is then populated with new payload containing action-creator's arguments (those can be used to calculate optimistic update). After promise is resolved `ACTION_NAME_COMPLETE` action is dispatched. This time the payload contains an actual resolved value that can be used to update redux state. In case that an error occures the `ACTION_NAME_ERROR` action is dispatched with error message as a payload.
+This middleware supports sync/async actions and helps deal with optimistic updates (see Async actions).
+
+
+# Helpers
+Helpers can do multiple things from ctreateing Redux actions to merge and extends other redux-utilities.
+
+
+## createAction
+
+This function will help you to set up an action creator with given type and payload. Payload is passed as second argument and it can be any **value** or **function** that evaluates to a valied value. If function returns a **Promise** then this action will be treatted as an async action.
+
+```
+const actionName = createAction("ACTION_TYPE", payload);
+```
+
+### Async actions
+
+When the action's payload is a Promise then this action is registered by the **rhm** and after promise is resolved `ACTION_NAME_COMPLETE` action is dispatched. The action's payload contains resolved value that can be used to update redux state. In case that an error occures the `ACTION_NAME_ERROR` action is dispatched with error message as a payload.
 
 **Wildcard error handling**
 
@@ -38,81 +58,113 @@ Promise is resolved...
 dispatch({type: "ASYNC_ACTION_COMPLETE", payload: promiseResult, args:[12]})
 ```
 
-### createReducer({ACTION_TYPE: reductor, ...})(initialState, ...)
-> Reductor signature: (payload, state, args) => ({key: value})
 
-HOF that at first call gets objects containing reducers logic. At second call it need to be called with initial state, or several parts of this state passed as following arguments. This is convenient when you want to decompose your reducing logic into separate files along with relevant part of the state.
+## createReducer
 
-Reductios can have four diferent form.
+Higher order function that at first call gets objects containing reducer's logic. At second call it need to be called with the initial state, or several parts of this state passed as following arguments. This is convenient when you want to decompose your reducing logic into separate files along with relevant part of the state.
 
 ```
-const reducerLogicA = {
-  ACTION_TYPE_A: (payload, state, args) => ({key: value}),
-  ACTION_TYPE_B: (payload, state, args) => value,
+const reducer = createReducer({
+
+  ACTION_TYPE: (payload, store, args) => ({}),
+
+  ...
+
+}, ...)(initialStateA, ...);
+```
+
+Reducer can return one of four types:
+
+```
+const reducerLogic = {
+  ACTION_TYPE_A: (payload, store, args) => ({key: value}),
+  ACTION_TYPE_B: (payload, store, args) => value,
   ACTION_TYPE_C: {key: value},
   ACTION_TYPE_D: value
-}
-
-const reducerLogicB = {
-  ...
-}
-
-default export createReducer(reducersLogicA, reducersLogicB)(initialStateA, initialStateB)
+};
 ```
 
-**Note about flat merge**
+### Decomposign reducer's logic
 
-All of the objects returned from the reducer function will be flat merge into new state. So instead doing `{...state, myValue: 12}` just return a slice of the state you'd like to update e.g.: `{myValue: 12}`.
+Sometimes it is convenient to separate parts of reducer with the corresponding state into separate file. Then you can compose it back like this:
 
-
-### createReduxUtils({reducer, actions, consts, combine, storeRoot}, namespace)
-> Returns: {storeHook, actions, selectors, consts, ...}
-
-Provides mounting point for rootReducer (*const.STORE_ROOT*) and allows to annotate *reducer* and *actions* of the component with **custom namespaces** in case developer want to duplicate or extend reducers functionality with other components/reducers.
-
-
-**Properties description**
-
-| Prop | Description |
-| ---- | ------------|
-| **reducer** | Redux reducer for the component |
-| **actions** | All actions for the component |
-| **consts** | All constants for the component |
-| **combine** | Combines child components reducers (see below) |
-| **storeRoot** | If constants does not provide *STORE_ROOT* value then it can be added here. It also overrides default *STORE_ROOT* value if it exist |
-| ** * ** | Any other utility you want to include |
-
-
-#### Selectros note:
-
-It is redomended to put **selectors** in the same file with **reducers** and export them as **selectors** object: `export {selectors}`. Then *createReduxUtils* will make sure that the **state object** passed to the selector will be a slice of the global state object related directly to the current reducer. It will also works with `reselect` library.
-
-
-**Example of annotated selecctors**
-```
-  const initState = {
-    value: 0
-  }
-
-  const selectors = {}
-  selectors.getValue = state => state.value
-
-  export {selectors}
 ```
 
-#### Combining Mounting Points note:
-There are cases when it'd be more convenient to distribute reducing logic for different part of the app into separate reucers e.g: ui-reducer, crud-reducer, fetch-reducer, etc. Most of them would have different mounting points (namespace in the store). To make them easy to mantain, sparate concerns and enable custom namespacing rhm allows for combining mounting points in by passing `combine:[reduxUtilsA, reduxUtilsB, ...]` in configuration object of **createReduxUtils()**. This also helps to aggregate several different reducers under one component's domain.
+import reducerLogicA, {initialStateA} from "./fileA";
+import reducerLogicB, {initialStateB} from "./fileB";
 
-### mountReducers(reduxUtilsA, reduxUtilsB, ...)
-> Returns: { nameA: reducerA, nameB: reducerB, ...}
+default export createReducer(reducerLogicA, reducerLogicB)(initialStateA, initialStateB);
 
-Helps to mount RHM's reducers into rootReducer.
+```
 
-### testAsyncActions(): {sniffer, listener}
+
+## mountReducers
+
+This helper will handle all details about proper installing all RHM's reducers into your root reducer. This is very convenient because now you can import only the top level components of your app and don't worry how to map app structure in the Store. Using RHM's helpers you can build the structure alongside the app with ease.
+
+```
+// rootReducer.js
+...
+import {mountReducers} from "rhm";
+import {combineReducers} from "redux";
+import {myReduxComp} from "components/myReduxComp";
 ...
 
+export default combineReducers(mountReducers(myReduxComp));
+```
 
-## To do
-  1. Imporve Docs
-  2. Add examples
-  3. Add unit tests
+
+## createReduxUtils
+
+Creates the redux-utility object for the component. This allows us to hava a single point of reference for actions, selectors, constants etc. It aggregates redux capabilities in clean unified API.
+
+```
+import * as actions from "./redux/actions";
+import * as reducer from "./redux/reducer";
+import * as anythingElse from "./myReduxComp/utils";
+
+const myReduxComp = createReduxUtils("myReduxComp", {reducer, actions, anythingElse});
+```
+
+This object will contain following properties:
+
+```
+console.log(myReduxComp) //
+{
+  reducer: () => {},
+  actions: {},
+  selectors: {},
+  storeRoot: "myReduxComp",
+  ...anythingElse  
+}
+
+```
+
+You can pass into **createReduxUtils** configuration object anything that you may find usefull for your component. Those values will be passed thorugh. createReduxUtils cares only about reducer ,actions and selectors therefore it have some restrictions about it. Rest is up to you.
+
+## extendReduxUtils
+
+```
+TO DO ...
+```
+
+
+## mergeReduxUtils
+
+```
+TO DO ...
+```
+
+
+## createCompactUtils
+
+```
+TO DO ...
+```
+
+
+## testAsyncActions
+
+```
+TO DO ...
+```
