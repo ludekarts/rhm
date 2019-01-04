@@ -144,8 +144,25 @@ You can pass into **createReduxUtils** configuration object anything that you ma
 
 ## extendReduxUtils
 
+Extends redux-utility. This mean that you can add new actions, reducers, selectors and initial state to existing components extending its functionality or creating new instances with similar logic by provideing *extensionPostfix* that is not an empty string.
+
 ```
-TO DO ...
+  import {extendReduxUtils, createAction} from "rhm";
+  import utilsToExtend from "./componentToExtend";
+
+  const extension = extendReduxUtils("extensionName", utilsToExtend, "extensionPostfix", {
+    initState: {},
+
+    reducer: {
+      EXT_ACTION_NAME: (payload , state, args) => ({})
+    },
+
+    actions: {
+      extActionName: createAction("EXT_ACTION_NAME")
+    },
+
+    selectors: {}
+  });
 ```
 
 
@@ -160,6 +177,30 @@ TO DO ...
 
 ```
 TO DO ...
+```
+
+## asyncStore
+
+Allows you to enhance Redux Store with **addAsyncReducer** method help better handling code splitting.
+
+```
+  import {asyncStore} from "rhm";
+  import reducers from "./staticReducers";
+  import {applyMiddleware, createStore, combineReducers} from "redux";
+
+  ...
+
+  const store = asyncStore(createStore(combineReducers(reducers), middleware), reducers);
+```
+
+Later on with **dynamic imports** using e.g *react-loadable*:
+
+```
+const AsyncComponent = Loadable({
+  loader: () => import('./my-component').then(store.addAsyncReducer),
+  loading: Loading,
+});
+
 ```
 
 

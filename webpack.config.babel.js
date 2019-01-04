@@ -12,6 +12,10 @@ export default() => ({
     library: "rhm"
   },
 
+  externals : {
+    redux: "redux"
+  },
+
   context: path.resolve(__dirname, "src"),
 
   module: {

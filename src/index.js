@@ -4,6 +4,7 @@
 
 import middleware from "./middleware";
 // Utils.
+import asyncStore from "./utils/async-store";
 import createAction from "./utils/create-action";
 import createReducer from "./utils/create-reducer";
 import mountReducers from "./utils/mount-reducers";
@@ -13,9 +14,11 @@ import extendReduxUtils from "./utils/extend-redux-utils";
 import testAsyncActions from "./utils/test-async-actions";
 import createCompactUtils from "./utils/create-compact-utils";
 
+
 export default middleware;
 export {
   // Redux Defaults.
+  asyncStore,
   createAction,
   createReducer,
   mountReducers,
