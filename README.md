@@ -10,6 +10,7 @@ This package contains several utilities for:
 This middleware supports sync/async actions and help deals with optimistic updates (see more in Async Actions section).
 
 **USAGE:**
+
 Import it as a default from **rhm** package and add into your middlewares.
 
 ```
@@ -30,6 +31,7 @@ Helpers is a collection of couple utility functions that can do multiple things 
 Sets up an action creator with given type and payload. Payload is passed as a second argument and it can be any **value** or **function** that evaluates to a value. If function returns a **Promise** then this action is automaticy treatted as an async action.
 
 **USAGE:**
+
 ```
 import {createAction} from "rhm";
 ...
@@ -38,6 +40,7 @@ const actionName = createAction("ACTION_TYPE", payload);
 ```
 
 **PARAMS:**
+
 | Param | Type | Required | Description |
 |:---:|:---:|:---:|---|
 | **ACTION_TYPE**  | String  | True | Describe action name. |
@@ -50,6 +53,7 @@ const actionName = createAction("ACTION_TYPE", payload);
 Higher order function that creates a reducer function that can be called later with its initial state.
 
 **USAGE (basic):**
+
 ```
 import {createReducer} from "rhm";
 ...
@@ -63,6 +67,7 @@ const reducer = createReducer(reducerLogic)(initialState);
 ```
 
 **PARAMS:**
+
 | Param | Type | Required | Description |
 |:---:|:---:|:---:|---|
 | **reducerLogic**  | Object  | True | Contains reducing loginc as a **key: value** pairs wher **key is an action name** and the value is the reducer's outcome. |
@@ -70,6 +75,7 @@ const reducer = createReducer(reducerLogic)(initialState);
 
 
 **Reducer's Outcome:**
+
 Single reducing statemanet in **reducerLogic** object can be written in one of four forms:
 
 ```
@@ -83,6 +89,7 @@ const reducerLogic = {
 
 When reducing statement is function then as an argument it will receive the object with following properties:
 
+
 | Prop | Type | Description |
 |:---:|:---:|---|
 | **payload**  | Object  | Dispatched action's payload. |
@@ -90,6 +97,7 @@ When reducing statement is function then as an argument it will receive the obje
 | **args**  | Array  | Array of arguments that were called on the action creator. |
 
 **USAGE (advanced):**
+
 Sometimes it's convenient to separate parts of the reducer with corresponding state into separate files. In that case you can compose it like this:
 
 ```
@@ -111,6 +119,7 @@ default export createReducer(
 Selectors are used to get / compute derived data from the store and in most cases we want them to be colocated with the reducer of this component. Selectors need to operate on the globals store object which make it hard to keep components independent, decoupled from the global data structure. Using RHM's helpers we can use selectors as they were locally scoped. In your reducer just create named **selectors** export and treat **initial state** object as the root of your component data structure.
 
 **Note:**
+
 It also can be used with libary as [reselect](https://github.com/reduxjs/reselect).
 
 ```
@@ -151,6 +160,7 @@ export default combineReducers(mountReducers(myReduxComponent));
 Creates **redux-utility** object for the component. This allows us to have a single point of reference for actions, selectors, constants etc. It aggregates redux's capabilities in clean unified API. For more details see: [RHM's Component Pattern](#)
 
 **USAGE:**
+
 ```
 import * as actions from "./redux/actions";
 import * as reducer from "./redux/reducer";
@@ -173,12 +183,14 @@ console.log(myReduxComponent) //
 ```
 
 **PARAMS:**
+
 | Param | Type | Required | Description |
 |:---|:---:|:---:|---|
 | **storeRoot**  | String | True | Name under which the reducer will be registered in the Redux Store. |
 |**utilitiesConfig** | Object | True | Redux-utility configuration object that specivies its main **reducer**, **actions** and **selectors**. |
 
 **Redux-utility configuration object schema:**
+
 | Prop | Type | Required | Description |
 |:---|:---:|:---:|---|
 | **reducer** | Function | True | Reducer function. In most cases it will be the product of **createReducer** helper. |
@@ -186,9 +198,11 @@ console.log(myReduxComponent) //
 | **selectors** | Object | True | A collection of selector functions for current piece of store. |
 
 **Note:**
+
 You can pass into **createReduxUtils** configuration's object anything that you may find usefull for your component. Those values will be passed thorugh. CreateReduxUtils requires only **reducer**, **actions** and **selectors** therefore it have some restrictions about it. The rest is up to you.
 
 **Note 2:**
+
 Selectors can be provided in two ways. One directly as "selectors" prop in the configuration object or two as a part of component's reducer export which is preferred an used in [HRM's Component Pattern](#).
 
 ## extendReduxUtils
@@ -196,6 +210,7 @@ Selectors can be provided in two ways. One directly as "selectors" prop in the c
 Extends **Redux-utility** object. This mean that you can add **new actions**, **reducers**, **selectors** and **initial state** to the existing components extending their functionalities or creating new instances with similar logic by provideing **extensionPostfix**.
 
 **Note:**
+
 Extended components are separate instances in terms of data. They're altered copies of their "parents" an also exist in Redux Store under its own namespace.
 
 ```
@@ -219,6 +234,7 @@ Extended components are separate instances in terms of data. They're altered cop
 ```
 
 **PARAMS:**
+
 | Param | Type | Required | Description |
 |:---|:---:|:---:|---|
 | **extensionName** | String | True | Name under which the reducer will be registered in the Redux Store. |
@@ -231,6 +247,7 @@ Extended components are separate instances in terms of data. They're altered cop
 Allows to deep/flat merge of redux-utilities objects to allow creating store structure in more composible fashion. In other words it merges given utilities under **one namespace** or **flat merge** it if no namespace provided. Merge will respect all relations between reducres and it's slectors.
 
 **USAGE:**
+
 ```
 import {utils_one} from "./components/utilsOne";
 import {utils_two} from "./components/utilsTwo";
@@ -243,13 +260,16 @@ export default mergeReduxUtils("mergedName", utils_one, utils_two, utils_three);
 // Flat Merge:
 export default mergeReduxUtils(utils_one, utils_two, utils_three);
 ```
+
 **PARAMS:**
+
 | Param | Type | Required | Description |
 |:---|:---:|:---:|---|
 | **mergedName** | String | False | Provides common namespace for merged utilities. This name will appear in the Redux Store. |
 | **reduxUtilities** | Redux-utility Object | True | One or more Objects that will be merged together. |
 
 **Named Merge vs. Flat Merge:**
+
 When to use Named merge instead of Flat merge?
 - Use **Named merge** when you separate logic in terms of one component and you want that component have common state with its parts and appear in Redux Store under one name. Example of that could be some kind of editing UI where you'd have: WorkingAreaComponent, ToolbarComponent, UIComponent where each of them have its own internal state but as a whole they create *editorComponent* and share some common state as well.
 - Use **Flat Merge** if you have couple components scattered in many location but you would like to import it in one import into your *rootReducer*. Example of that could be set of user-tool components where none of them share common state but physically are located under one catalog e.g.: *user-tools*.
@@ -259,6 +279,7 @@ When to use Named merge instead of Flat merge?
 Provides same functionality as **createReduxUtils** but allows developer to use compact notation that can be putted in single file instead spreading the logic across multiple files.
 
 **USAGE:**
+
 ```
 export default createCompactUtils("storeRoot", {
 
@@ -283,6 +304,7 @@ export default createCompactUtils("storeRoot", {
 |**utilitiesConfig** | Object | True | Redux-utility configuration object that specivies its main **reducer**, **actions**, **selectors** and **initial state**. |
 
 **Redux-utility configuration object schema:**
+
 | Prop | Type | Required | Description |
 |:---|:---:|:---:|---|
 | **initState** | Object | True | Initial state for the reducer |
@@ -291,6 +313,7 @@ export default createCompactUtils("storeRoot", {
 | **selectors** | Object | True | A collection of selector functions for current piece of store. |
 
 **How to create actions in shorthand notation?:**
+
 In the shorthand notation each action creator is a **key:value** pair where
 - **key** is the **action crator name**
 - **value** is a **tuple** (array) of an **action name** and **final value**/**function** or **undefined**.
@@ -334,7 +357,6 @@ TO DO ...
 # 🐾  RHM's Component Pattern
 This guideline describes how to best structure components to get full advantage from the RHM package.
 
-### File structure
 
 # 🃏 Extras
 Some additional information about RHM internals.
