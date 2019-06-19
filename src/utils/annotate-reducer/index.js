@@ -2,7 +2,7 @@ import createReducer from "../create-reducer";
 
 // Annotate reducer's actions with custom namespace.
 const annotateReducer = (reducer, namespace, extReducer, extState) => {
-  const findAsync = /(_COMPLETE|_ERROR)$/m;
+  const findAsync = /(_PENDING|_COMPLETE|_ERROR)$/m;
   let [reducerArgs, initialState] = reducer(null, null, true);
 
   // Additional underscore in name.

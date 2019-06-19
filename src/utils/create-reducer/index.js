@@ -8,8 +8,8 @@ import mergeStateObjects from "../merge-state-objects";
 /*
 
   const reducer = createReducer({
-    ACTION_TYPE_A: (payload, state, args) => ({key: value}),
-    ACTION_TYPE_B: (payload, state, args) => value,
+    ACTION_TYPE_A: ({payload, state, args}) => ({key: value}),
+    ACTION_TYPE_B: ({payload, state, args}) => value,
     ACTION_TYPE_C: {key: value},
     ACTION_TYPE_D: value
   }, ...)(initialState, ...);
@@ -77,7 +77,11 @@ function reduce(reducer, action, state) {
     return reducer;
   }
   else if (typeof reducer === "function") {
-    const itm = reducer(action.payload, state, action.args);
+    const itm = reducer({
+      state: state,
+      args: action.args,
+      payload: action.payload
+    });
     return isPrimitive(itm) ? itm : {...state, ...itm};
   }
   // Plain object.

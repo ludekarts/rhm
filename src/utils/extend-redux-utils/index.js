@@ -25,9 +25,13 @@ import annotateReducer from "../annotate-reducer";
 */
 const extendReduxUtils = (namespace, source, postfix, extension) => {
 
+  // TODO: Add "source" validation.
   let {reducer, actions, selectors, storeHook, ...rest} = source;
+
+  // TODO: Add "selectors" validation.
   let srcSelectors = reducer.selectors;
 
+  // TODO: Add "extension" validation.
   const {
     actions: extActions,
     reducer: extReducer,

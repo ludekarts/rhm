@@ -5,8 +5,8 @@ import annotateReducer from "../annotate-reducer";
 import resolveSelectors from "../resolve-selectors";
 
 // Allows to deep/flat merge of redux-utils to helps create Store structure in more composible fashion.
-// In other words it merges given utilities under one namespace OR flat merge if no namespace respecting
-// all relations between reducres and it's slectors.
+// In other words it merges given utilities under one namespace OR flat merge it if no namespace provided.
+// Merge will respect all relations between reducres and it's slectors.
 //
 // USAGE:
 /*

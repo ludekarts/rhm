@@ -13,7 +13,7 @@ export default createCompactUtils("utilsName", {
   initState: {},
 
   reducer: {
-    ACTION_NAME: (payload, state, args) => ({})
+    ACTION_NAME: ({payload, state, args}) => ({})
   },
 
   actions: {
@@ -35,7 +35,12 @@ const createCompactUtils = (namespace, utilities) => {
     ...rest
   } = utilities;
 
-  const reducer = createReducer(utReducer)(initState);
+
+  const reducer = {
+    default: createReducer(utReducer)(initState),
+    // Add selectors to the reducer so it can preserve its original form after extending.
+    selectors
+  };
 
   const actions = Object.keys(utActions).reduce(
     (acc, actionName, index) => {
@@ -49,7 +54,7 @@ const createCompactUtils = (namespace, utilities) => {
     }, {}
   );
 
-  return createReduxUtils(namespace, {reducer, actions, selectors, ...rest});
+  return createReduxUtils(namespace, {reducer, actions, ...rest});
 }
 
 export default createCompactUtils;

@@ -8,7 +8,7 @@ export default (function asyncStore() {
 
     store.addAsyncReducer = module => {
 
-      // Extreact streoHooks from Component.
+      // Extreact storeHooks from Component.
       Object.keys(module).forEach(key => {
         if (module[key].storeHook) {
           Object.keys(module[key].storeHook).forEach(redName => {
