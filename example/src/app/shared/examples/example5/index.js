@@ -22,10 +22,10 @@ export const Intro5 = ({intro = true}) => (
     <Spacer size="10px"/>
     Using <strong>mergeReduxUtils</strong> and <strong>mountReducers</strong> we can fairly easily create
     our state in the bottom up fashion. That means we create our Store from the states of our components.
-    This is quite handy because you don't need to design your Store at the beginning or put too much thought
-    to the normalization process upfront. You just build your component and plug it into Redux Store with
-    RHM utilities. Thanks to that state of your component will be part of global state but in the same time
-    it's decoupled enough to allow you for freely modification and relocation of the component*.
+    It's quite handy because you don't need to design your Store at the beginning or put too much thought
+    to the normalization process upfront. You just build a component and plug it into Redux Store with
+    RHM utilities. Thanks to that the state of your component will be part of the global state but in the
+    same time it's decoupled enough to allow you for freely modification and relocation of the component*.
     <Spacer size="10px"/>
     <sub>*If you follow the rules 😉</sub>
     <Spacer size="20px"/>

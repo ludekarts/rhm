@@ -39,7 +39,7 @@ export default function Example() {
     <Content>
       <Spacer size="10px"/>
       <Button to="/" color="#16174c">👈 Back to Index </Button>
-      <Intr61 intro={false}/>
+      <Intr6 intro={false}/>
     </Content>
   );
 };

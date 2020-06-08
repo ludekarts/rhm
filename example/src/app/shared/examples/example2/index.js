@@ -112,6 +112,7 @@ export default function Example() {
 
         Review accordions code to get the full picture of how it's made.
       </AccordionMagenta>
+      <Spacer size="60px"/>
     </Content>
   );
 };
